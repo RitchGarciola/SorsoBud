@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SorsoBud – Your Sorsogon AI Tour Guide</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Open Sans', sans-serif;
+      background: #f2fbf4;
+      color: #05386b;
+    }
+    header {
+      background: linear-gradient(to right, #0e5ed6, #1b89d3);
+      padding: 2rem;
+      text-align: center;
+      color: white;
+    }
+    header h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3rem;
+      margin: 0;
+    }
+    header p {
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+    .chatbox {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-height: 400px;
+    }
+    .chat-log {
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 0.5rem;
+    }
+    .msg {
+      margin: 1rem 0;
+    }
+    .msg.user {
+      text-align: right;
+    }
+    .msg.bot {
+      text-align: left;
+      color: #3a3a3a;
+    }
+    .msg span {
+      display: inline-block;
+      background: #e0ffe6;
+      padding: 0.6rem 1rem;
+      border-radius: 1rem;
+      max-width: 75%;
+    }
+    .msg.user span {
+      background: #caffbf;
+    }
+    form {
+      display: flex;
+      margin-top: 1rem;
+    }
+    input {
+      flex: 1;
+      padding: 0.75rem;
+      border-radius: 8px 0 0 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.75rem 1rem;
+      background: #38b000;
+      color: white;
+      border: none;
+      border-radius: 0 8px 8px 0;
+      cursor: pointer;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SorsoBud 🌺</h1>
+    <p>Your friendly AI tour guide for Sorsogon, Philippines 🇵🇭</p>
+  </header>
+
+  <div class="chatbox">
+    <div class="chat-log" id="chatLog">
+      <div class="msg bot"><span>Hi! I'm SorsoBud. Ask me anything about Sorsogon! 🌊</span></div>
+    </div>
+    <form id="chatForm">
+      <input type="text" id="userInput" placeholder="Ask about beaches, food, culture..." autocomplete="off" required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <footer>
+    🌴 SorsoBud © 2025 – Made with love for Sorsogon 🇵🇭
+  </footer>
+
+  <script>
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('userInput');
+    const chatLog = document.getElementById('chatLog');
+
+    const API_URL = 'https://SorsoBud.onrender.com/api/v1/prediction/e4864b9c-1e15-43cc-b836-288509bc9c1c'; // Update this!
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+
+      // Add user's message
+      chatLog.innerHTML += `<div class="msg user"><span>${question}</span></div>`;
+      chatLog.scrollTop = chatLog.scrollHeight;
+      input.value = '';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question })
+        });
+
+        const data = await res.json();
+        const reply = data.text || 'Sorry, I didn’t get that.';
+
+        chatLog.innerHTML += `<div class="msg bot"><span>${reply}</span></div>`;
+        chatLog.scrollTop = chatLog.scrollHeight;
+      } catch (err) {
+        chatLog.innerHTML += `<div class="msg bot"><span>⚠️ Error: Unable to reply.</span></div>`;
+      }
+    });
+  </script>
+</body>
+</html>
